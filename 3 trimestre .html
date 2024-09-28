@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 trimestre - simulado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('sua-imagem-de-fundo.jpg'); /* Substitua pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 20px;
+        }
+        #quiz-container, #result-container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        #quiz-container {
+            display: none; /* Esconde o container de quiz inicialmente */
+        }
+        #result-container {
+            display: none;
+        }
+        #question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF; /* Azul inicial */
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .option-button:hover:not(.correct):not(.incorrect) {
+            background-color: #0056b3;
+        }
+        .correct {
+            background-color: #28a745 !important; /* Verde para respostas corretas */
+            color: white;
+        }
+        .incorrect {
+            background-color: #dc3545 !important; /* Vermelho para respostas erradas */
+            color: white;
+        }
+        #next-button, #reset-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: bold;
+        }
+        #next-button {
+            background-color: #007BFF; /* Azul para o botão de próxima pergunta */
+            color: white;
+            display: none; /* Inicialmente escondido */
+        }
+        #reset-button {
+            background-color: #ffc107; /* Amarelo para o botão de reiniciar quiz */
+            color: black;
+            display: none; /* Inicialmente escondido */
+        }
+        #score-counter {
+            font-size: 1.1em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        #final-score {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .start-button {
+            padding: 15px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007BFF; /* Azul para o botão de iniciar */
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .start-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>3 Trimestre - Simulado</h1>
+    <button class="start-button" onclick="startQuiz()">Iniciar Quiz</button>
+
+    <div id="quiz-container">
+        <div id="score-counter">
+            <span id="correct-count">Acertos: 0</span> | <span id="incorrect-count">Erros: 0</span>
+        </div>
+        <div id="question"></div>
+        <div id="options"></div>
+        <button id="next-button" onclick="nextQuestion()">Próxima Pergunta</button>
+        <button id="reset-button" onclick="restartQuiz()">Reiniciar Quiz</button>
+    </div>
+
+    <div id="result-container">
+        <h2>Resultado</h2>
+        <p id="final-score"></p>
+        <button id="reset-button-result" onclick="restartQuiz()">Reiniciar Quiz</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "1- O que é dom?", options: ["Dádiva de Deus", "Castigo de Deus", "Missão de Deus"], correct: 0 },
+            { question: "2- O que o livro de Atos capítulo 2 descreve?", options: ["Foram pescar", "Foram cheios do Espírito Santo", "Todos foram viajar"], correct: 1 },
+            { question: "3- Cite um dom ministerial.", options: ["Profetas", "Professores", "Preparadores"], correct: 0 },
+            { question: "4- Qual o propósito do ministério?", options: ["Promover festas", "Promover os irmãos", "Promover o crescimento espiritual"], correct: 2 },
+            { question: "5- Quem nos capacita com os dons espirituais?", options: ["Nosso pastor", "Nossos pais", "O Espírito Santo"], correct: 2 },
+            { question: "6- Cite 2 dons espirituais?", options: ["Sabedoria e inteligência", "Sabedoria e dom da fé", "Sabedoria e sinceridade"], correct: 1 },
+            { question: "7- Quantos dons espirituais estão registrados?", options: ["10", "12", "9"], correct: 2 },
+            { question: "8- Deus distribui os dons espirituais de acordo com a necessidade:", options: ["Da mocidade", "Do círculo de oração", "Da igreja"], correct: 2 },
+            { question: "9- A comunhão é uma característica de qual igreja?", options: ["Contemporânea", "Renovada", "Primitiva"], correct: 2 },
+            { question: "10- O que Paulo ensinava para a igreja de Corinto?", options: ["A importância de viver unidos", "A importância de cantar bonito", "A importância de ser feliz"], correct: 0 },
+            { question: "11- O senhor deu à igreja dois tipos de dons. Quais são:", options: ["Ministeriais e espirituais", "Ministeriais e vocacionais", "Vocacionais e espirituais"], correct: 0 },
+            { question: "12- A igreja de Atos era perseguida pelos romanos, então ela:", options: ["Se escondeu", "Ficou com medo", "Pregava o evangelho por toda parte"], correct: 2 },
+            { question: "13- Por que Jesus morreu na cruz do Calvário?", options: ["Porque foi traído", "Para nos salvar", "Porque não se defendeu"], correct: 1 },
+            { question: "14- Qual o sentimento que levou Jesus a morrer para nos salvar?", options: ["Tristeza", "Empatia", "Amor"], correct: 2 },
+            { question: "15- Paulo pontuou o amor como o caminho mais:", options: ["Bonito", "Excelente", "Agradável"], correct: 1 },
+            { question: "16- O que Jesus fala sobre o amor:", options: ["Ama a teu próximo como a ti mesmo", "Ama a teu próximo como a Deus", "Ama a teu próximo como a Jesus"], correct: 0 },
+            { question: "17- Quem Jesus nos enviou para nos ajudar aqui na terra?", options: ["Os médicos", "Os professores", "O Espírito Santo"], correct: 2 },
+            { question: "18- O caráter de um cristão é demonstrado:", options: ["Indo para igreja", "Um bom testemunho", "Louvando ao Senhor"], correct: 1 },
+            { question: "19- Quem fala em línguas estranhas edifica:", options: ["A si mesmo", "À igreja", "À família"], correct: 0 },
+            { question: "20- Como Deus revela seus propósitos a nós:", options: ["Por meio dos anjos", "Por meio de visões e sonhos", "Através do pastor"], correct: 1 },
+            { question: "21- Adoração é…", options: ["Ser desobediente", "Fazer coisas boas", "Um ato de amor para com Deus"], correct: 2 },
+            { question: "22- Deus procura adoradores que o adorem com:", options: ["Honestidade", "Sinceridade", "Alegria"], correct: 1 },
+            { question: "23-Quem é o bom pastor descrito no evangelho de João?", options: ["Jesus", "Deus", "Os apóstolos"], correct: 0 },
+            { question: "24- Qual a missão do bom pastor?", options: ["Pregar bem", "Guiar o rebanho para suas necessidades espirituais", "Cantar na igreja"], correct: 1 },
+            { question: "25-Quais as características do bom pastor?", options: ["Bom, honesto, amoroso e verdadeiro", "Pregar, cantar e orar", "Viajar fazendo missões"], correct: 0 },
+            { question: "26- Como os presbíteros eram chamados no início da igreja?", options: ["Apóstolos ou pastores", "Diáconos ou apóstolos", "Anciãos ou bispos"], correct: 2 },
+            { question: "27- Qual a função do presbítero?", options: ["Auxiliar no círculo de oração", "Auxiliar o pastor", "Auxiliar a mocidade"], correct: 1 },
+            { question: "28- Quantos diáconos foram escolhidos?", options: ["05", "06", "07"], correct: 2 },
+            { question: "29- Qual a função dos diáconos?", options: ["Vigiar", "Servir", "Observar"], correct: 1 },
+            { question: "30-Quem foi o maior exemplo de servir?", options: ["João Batista", "Paulo", "Jesus Cristo"], correct: 2 },
+            { question: "31-Qual foi o homem que o Senhor entregou as leis?", options: ["Abrão", "Moisés", "Noé"], correct: 1 },
+            { question: "32-Qual era a finalidade dos 10 mandamentos?", options: ["Do povo não voltar pro Egito", "Conduzir o povo de modo santo e espiritual", "Para o povo não se perder no deserto"], correct: 1 },
+            { question: "33-Quais eram as orientações contidas nos 10 mandamentos?", options: ["Morais, Civis e Cerimoniais", "Morais e Civis", "Morais, Civis e Religiosos"], correct: 0 },
+            { question: "34- Qual a decisão mais importante que o ser humano pode tomar nesse mundo?", options: ["Aceitar a Jesus Cristo como seu Salvador", "Ser uma boa pessoa", "Se tornar um cidadão muito rico e influente"], correct: 0 },
+            { question: "35- Qual é a missão da Igreja no Discipulado?", options: ["É ensinar o evangelho e fazer novos discípulos por toda parte do mundo", "Abrir em cada igreja um espaço acolhedor", "É abrir novas igrejas"], correct: 0 },
+            { question: "36-O batismo nas águas é o que para o Discipulado?", options: ["Ordenança e um mandamento", "Uma ordenança e um mandamento", "Um mandamento e uma missão"], correct: 1 },
+            { question: "37-O que é Evangelismo?", options: ["É um dever de levar o evangelho só pra minha família", "É uma ordem e um dever de levar o evangelho a todo o mundo", "É uma ordem de levar o evangelho só para os meus amigos"], correct: 1 },
+            { question: "38-Depois de Jesus, qual foi o maior exemplo de compromisso com o Evangelismo?", options: ["Pedro", "Paulo", "Timóteo"], correct: 1 },
+            { question: "39-Como a Igreja Primitiva ajudava os necessitados?", options: ["Doutrina, comunhão, partir do pão e na oração", "Na oração, comunhão e na doutrina", "Na oração e na comunhão"], correct: 0 },
+            { question: "40-Qual é a outra forma de Evangelizar?", options: ["A Boa palavra", "Ter um bom testemunho", "Participar de grande igreja"], correct: 1 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            document.getElementById("correct-count").innerText = "Acertos: 0";
+            document.getElementById("incorrect-count").innerText = "Erros: 0";
+            document.getElementById("result-container").style.display = "none";
+            document.getElementById("quiz-container").style.display = "block";
+            document.querySelector(".start-button").style.display = "none"; // Esconde o botão de iniciar
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").innerHTML = `<strong>${currentQuestion.question}</strong>`;
+
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = ""; // Limpa as opções anteriores
+
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement("button");
+                button.className = "option-button";
+                button.innerHTML = `<strong>${option}</strong>`;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById("next-button").style.display = "none"; // Esconde o botão "Próxima Pergunta" inicialmente
+        }
+
+        function selectAnswer(selectedIndex) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const optionsButtons = document.getElementById("options").getElementsByTagName("button");
+
+            if (selectedIndex === currentQuestion.correct) {
+                optionsButtons[selectedIndex].classList.add("correct");
+                correctAnswers++;
+                document.getElementById("correct-count").innerText = `Acertos: ${correctAnswers}`;
+            } else {
+                optionsButtons[selectedIndex].classList.add("incorrect");
+                optionsButtons[currentQuestion.correct].classList.add("correct"); // Destaca a resposta correta
+                incorrectAnswers++;
+                document.getElementById("incorrect-count").innerText = `Erros: ${incorrectAnswers}`;
+            }
+
+            // Desabilita todos os botões após a seleção
+            Array.from(optionsButtons).forEach(button => {
+                button.disabled = true;
+            });
+
+            document.getElementById("next-button").style.display = "inline-block"; // Mostra o botão "Próxima Pergunta"
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById("quiz-container").style.display = "none";
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+            document.getElementById("final-score").innerText = `Você acertou ${correctAnswers} de ${questions.length} perguntas (${percentage}%).`;
+            document.getElementById("result-container").style.display = "block";
+            document.getElementById("reset-button-result").style.display = "inline-block"; // Mostra o botão "Reiniciar Quiz"
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            document.getElementById("correct-count").innerText = "Acertos: 0";
+            document.getElementById("incorrect-count").innerText = "Erros: 0";
+            document.getElementById("result-container").style.display = "none";
+            document.getElementById("quiz-container").style.display = "block";
+            showQuestion();
+        }
+    </script>
+</body>
+</html>
